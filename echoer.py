@@ -14,10 +14,10 @@ fname = args.fname
 is_win = args.windows
 
 esc_char = '\\'
-bad_chars = r'''"'&;<>~\#!$(){}[]'''
+bad_chars = r'''"'|&;<>~\#!$(){}[]'''
 if is_win:
     esc_char = '^'
-    bad_chars = r'''&^<>'''
+    bad_chars = r'''|&^<>'''
 
 for line in stdin.readlines():
     new_line = ""
