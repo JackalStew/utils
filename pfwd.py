@@ -30,7 +30,7 @@ def safe_close_b(sock, shut=SHUT_RDWR):
             pass
 
 
-def start_daemon(target, args):
+def start_thread(target, args):
     t = Thread(target=target, args=args)
     t.daemon = True
     t.start()
@@ -45,9 +45,8 @@ def forward(src_sock, dst_sock):
             buf = src_sock.recv(recv_size)
     except:
         pass
-    finally:
-        safe_close_b(src_sock, SHUT_RD)
-        safe_close_b(dst_sock, SHUT_WR)
+    safe_close_b(src_sock, SHUT_RD)
+    safe_close_b(dst_sock, SHUT_WR)
 
 
 def listener(bind_addr, bind_port, fwd_addr, fwd_port):
@@ -62,8 +61,8 @@ def listener(bind_addr, bind_port, fwd_addr, fwd_port):
             print("Accepted new connection from %s:%d" % (in_addr[0], in_addr[1]))
             out_sock = socket(AF_INET, SOCK_STREAM)
             out_sock.connect((fwd_addr, fwd_port))
-            start_daemon(forward, (in_sock, out_sock))
-            start_daemon(forward, (out_sock, in_sock))
+            start_thread(forward, (in_sock, out_sock))
+            start_thread(forward, (out_sock, in_sock))
         except:
             safe_close_a(in_sock)
             safe_close_a(out_sock)
@@ -78,7 +77,7 @@ def start_listener(arg_group):
     if len(args) != 3:
         raise ValueError("Invalid number of args for %s" % arg_group)
     bind_port, fwd_addr, fwd_port = int(args[0]), args[1], int(args[2])
-    start_daemon(listener, (bind_addr, bind_port, fwd_addr, fwd_port))
+    start_thread(listener, (bind_addr, bind_port, fwd_addr, fwd_port))
 
 
 def main(args):
@@ -90,7 +89,6 @@ def main(args):
         raw_input()
     except NameError:
         input()
-    exit()
 
 
 if __name__ == "__main__":
