@@ -1,6 +1,7 @@
 """
 A script to temporarliy forward TCP ports.
 """
+from os import getpid
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR, SHUT_RD, SHUT_WR, SHUT_RDWR
 from sys import argv
 from threading import Thread
@@ -82,6 +83,7 @@ def start_listener(arg_group):
 
 def main(args):
     print("Hit ENTER to stop")
+    print("Or kill the PID %d" % getpid())
     for arg_group in args:
         start_listener(arg_group)
     # Python 2/3 compat mess:
