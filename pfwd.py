@@ -55,11 +55,13 @@ def listener(bind_addr, bind_port, fwd_addr, fwd_port):
     bind_sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     bind_sock.bind((bind_addr, bind_port))
     bind_sock.listen(max_listen)
-    print("Now forwarding: %s:%d --> %s:%d" % (bind_addr, bind_port, fwd_addr, fwd_port))
+    print("Now forwarding: %s:%d --> %s:%d" %
+          (bind_addr, bind_port, fwd_addr, fwd_port))
     while True:
         try:
             in_sock, in_addr = bind_sock.accept()
-            print("Accepted new connection from %s:%d" % (in_addr[0], in_addr[1]))
+            print("Accepted new connection from %s:%d --> %s:%d" %
+                  (in_addr[0], in_addr[1], fwd_addr, fwd_port))
             out_sock = socket(AF_INET, SOCK_STREAM)
             out_sock.connect((fwd_addr, fwd_port))
             start_thread(forward, (in_sock, out_sock))
@@ -76,21 +78,27 @@ def start_listener(arg_group):
         bind_addr = args[0]
         args = args[1:]
     if len(args) != 3:
-        raise ValueError("Invalid number of args for %s" % arg_group)
+        print("Unable to process %s" % arg_group)
+        return False
     bind_port, fwd_addr, fwd_port = int(args[0]), args[1], int(args[2])
     start_thread(listener, (bind_addr, bind_port, fwd_addr, fwd_port))
+    return True
 
 
 def main(args):
     print("Hit ENTER to stop")
     print("Or kill the PID %d" % getpid())
+
+    cont_flag = False
     for arg_group in args:
-        start_listener(arg_group)
-    # Python 2/3 compat mess:
-    try:
-        raw_input()
-    except NameError:
-        input()
+        cont_flag = start_listener(arg_group) or cont_flag
+
+    if cont_flag:
+        # Python 2/3 compat mess:
+        try:
+            raw_input()
+        except NameError:
+            input()
 
 
 if __name__ == "__main__":
