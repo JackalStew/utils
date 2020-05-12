@@ -39,7 +39,7 @@ func listener(bindStr string, connStr string) {
 		fmt.Println("Unable to bind on", bindStr)
 		return
 	}
-	fmt.Println("Listeneing:", bindStr, "-->", connStr)
+	fmt.Println("Listening:", bindStr, "-->", connStr)
 
 	for true {
 		inConn, err = ln.Accept()
